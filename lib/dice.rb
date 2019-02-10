@@ -9,25 +9,44 @@ class Dice
     @players = { 'player1' => { active: true, score: 0 },
                  'player2' => { active: false, score: 0 } }
     @active = 'player1'
+    @game_over = false
   end
 
-  def first_roll(player)
-    if @players[player][:active]
-      (0...5).each { |x| roll_one_dice(x) }
-      @current_dice_values.each { |d| d[:rolls] += 1 }
-      display_current_board
-    else
-      puts "it's not #{player}'s turn"
+  def game_loop
+    until @game_over
+      active_player = determine_active_player
+      players_round(active_player)
     end
   end
 
-  def roll_again(player)
+  def players_round(player)
+    first_roll
+    roll_until_finished
+    @players[player][:active] = false
+    update_active_player
+    puts 'round finished!'
+    @current_dice_values = @clear_dice_values
+  end
+
+  def first_roll
+    (0...5).each { |x| roll_one_dice(x) }
+    @current_dice_values.each { |d| d[:rolls] += 1 }
+    display_current_board
+  end
+
+  def choose_dice
+    puts('which dice do you want to roll again? Press Q to finish round')
+    choice_str = gets.chomp
+    choice = choice_str.to_i - 1
+    return false if choice_str.upcase == 'Q'
+    choice
+  end
+
+  def roll_until_finished
     available_dice = [0, 1, 2, 3, 4]
     while available_dice != []
-      puts('which dice do you want to roll again? Press Q to finish round')
-      choice_str = gets.chomp
-      choice = choice_str.to_i - 1
-      break if choice == -1 && choice_str.upcase == 'Q'
+      choice = choose_dice
+      break unless choice
       if available_dice.include? choice
         available_dice.delete(choice) if roll_limit_reached?(choice)
         roll_one_dice(choice)
@@ -36,10 +55,6 @@ class Dice
         puts 'you alredy rolled this dice 3 times'
       end
     end
-    @players[player][:active] = false
-    update_active_player
-    puts 'round finished!' # temp line
-    @current_dice_values = @clear_dice_values
   end
 
   def display_current_board
@@ -64,12 +79,16 @@ class Dice
       @players['player1'][:active] = true
     end
   end
+
+  def determine_active_player
+    @players.each { |name, info| return name if info[:active] }
+  end
 end
 
-# TODO: write begin_game/game_loop and determine_active_player
+# TODO: score class
+# TODO: write game_over? logic based on score
 
 # gameplay
-# #
+#
 # my_game = Dice.new
-# my_game.first_roll('player1')
-# my_game.roll_again('player1')
+# my_game.players_round('player1')
