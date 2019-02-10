@@ -39,4 +39,30 @@ describe '::score' do
       expect(test_score.jamb?([6, 6, 6, 6, 6])).to be true
     end
   end
+  describe '#calculate_tris' do
+    it 'should calculate tris correctly' do
+      expect(test_score.calculate_tris([1, 2, 2, 4, 2])).to be 16
+    end
+  end
+  describe '#calculate_kenta' do
+    it 'should calculate kenta correctly' do
+      expect(test_score.calculate_kenta([1, 2, 3, 4, 5])).to be 20
+      expect(test_score.calculate_kenta([2, 3, 4, 5, 6])).to be 30
+    end
+  end
+  describe '#calculate_full' do
+    it 'should calculate full correctly' do
+      expect(test_score.calculate_full([4, 2, 2, 4, 4])).to be 56
+    end
+  end
+  describe '#calculate_poker' do
+    it 'should calculate poker correctly' do
+      expect(test_score.calculate_poker([4, 2, 2, 2, 2])).to be 58
+    end
+  end
+  describe '#calculate_jamb' do
+    it 'should calculate jamb correctly' do
+      expect(test_score.calculate_jamb([4, 4, 4, 4, 4])).to be 120
+    end
+  end
 end
