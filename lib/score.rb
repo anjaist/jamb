@@ -4,13 +4,45 @@ class Score
     @score = 0
     @field_names = ['one', 'two', 'three', 'four', 'five', 'six', 'max', 'min',
                     'tris', 'kenta', 'full', 'poker', 'jamb']
-    @down_column = {}
-    @up_column = {}
+    @down_column = @field_names
+    @up_column = @field_names
     @updown_column = {}
+    @dice_values = nil
   end
 
-  def show_options
-    # shows which score can be marked down; to be called after each dice roll
+  def show_options(dice_values)
+    all_options = all_options(dice_values)
+    show = { 'down' => {}, 'up-down' => {}, 'up' => {} }
+    @field_names.each do |f|
+      show['up-down'][f] = all_options[f] unless @updown_column.key? f
+      if @up_column != []
+        show['up'][f] = all_options[f] if @up_column[-1] == f
+        @up_column.delete(f)
+      end
+      if @down_column != []
+        show['down'][f] = all_options[f] if @down_column[0] == f
+      end
+    end
+  end
+
+  # TODO: write test for show_options
+
+  def all_options(dv)
+    options = {}
+    options['one'] = calculate_dice_of_number(dv, 1) if dv.include? 1
+    options['two'] = calculate_dice_of_number(dv, 2) if dv.include? 2
+    options['three'] = calculate_dice_of_number(dv, 3) if dv.include? 3
+    options['four'] = calculate_dice_of_number(dv, 4) if dv.include? 4
+    options['one'] = calculate_dice_of_number(dv, 5) if dv.include? 5
+    options['six'] = calculate_dice_of_number(dv, 6) if dv.include? 6
+    options['max'] = calculate_max_or_min(dv)
+    options['min'] = calculate_max_or_min(dv)
+    options['tris'] = calculate_tris(dv) if tris?(dv)
+    options['kenta'] = calculate_kenta(dv) if kenta?(dv)
+    options['full'] = calculate_full(dv) if full?(dv)
+    options['poker'] = calculate_poker(dv) if poker?(dv)
+    options['jamb'] = calculate_jamb(dv) if jamb?(dv)
+    options
   end
 
   def calculate_dice_of_number(dice_values, num)
