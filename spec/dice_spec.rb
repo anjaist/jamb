@@ -17,8 +17,8 @@ describe '::dice' do
     expect(test_game.current_dice_values[random_dice][:rolls]).to be <= 3
   end
 
-  it "player's round ends if player presses 'q'" do
-    allow_any_instance_of(Object).to receive(:gets).and_return 'q'
+  it "player's round ends if player presses 'f'" do
+    allow_any_instance_of(Object).to receive(:gets).and_return 'f'
     test_game.players_round('player1')
     expect(test_game.players['player1'][:active]).to be false
     expect(test_game.players['player2'][:active]).to be true

@@ -1,3 +1,5 @@
+require_relative 'score'
+
 class Dice
   attr_reader :current_dice_values, :players
   def initialize(use_own_dice = false)
@@ -8,6 +10,8 @@ class Dice
     @use_own_dice = use_own_dice
     @players = { 'player1' => { active: true, score: 0 },
                  'player2' => { active: false, score: 0 } }
+    @player1_score = Score.new
+    @player2_score = Score.new
     @active = 'player1'
     @game_over = false
   end
@@ -22,6 +26,8 @@ class Dice
   def players_round(player)
     first_roll
     roll_until_finished
+    score = 1 # temp line
+    add_current_round_to_user_score(player, score)
     @players[player][:active] = false
     update_active_player
     puts 'round finished!'
@@ -35,10 +41,10 @@ class Dice
   end
 
   def choose_dice
-    puts('which dice do you want to roll again? Press Q to finish round')
+    puts('which dice do you want to roll again? Press F to finish round')
     choice_str = gets.chomp
     choice = choice_str.to_i - 1
-    return false if choice_str.upcase == 'Q'
+    return false if choice_str.upcase == 'F'
     choice
   end
 
@@ -57,8 +63,20 @@ class Dice
     end
   end
 
+  def dice_values_only
+    values = []
+    @current_dice_values.each do |dice|
+      values << dice[:value]
+    end
+    values
+  end
+
   def display_current_board
+    puts('====================')
     @current_dice_values.each { |d| puts(d[:value]) }
+    current_score = determine_score_class_for_player
+    current_score.show_options(dice_values_only)
+    # TODO: fix show_options options
   end
 
   def roll_one_dice(dice)
@@ -83,12 +101,27 @@ class Dice
   def determine_active_player
     @players.each { |name, info| return name if info[:active] }
   end
+
+  def determine_score_class_for_player
+    player = determine_active_player
+    return @player1_score if player == 'player1'
+    return @player2_score if player == 'player2'
+  end
+
+  def display_current_score
+    # TODO: show possibilities at each dice roll
+  end
+
+  def add_current_round_to_user_score(player, score)
+    @players[player][:score] += score
+  end
+
+  def game_over?
+    # TODO: true if all players fulfilled all fields
+  end
 end
 
-# TODO: score class
-# TODO: write game_over? logic based on score
-
-# gameplay
+# gameplay:
 #
-# my_game = Dice.new
-# my_game.players_round('player1')
+my_game = Dice.new
+my_game.players_round('player1')

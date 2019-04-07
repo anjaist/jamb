@@ -1,7 +1,5 @@
 class Score
-  def initialize(player)
-    @player = player
-    @score = 0
+  def initialize
     @field_names = ['one', 'two', 'three', 'four', 'five', 'six', 'max', 'min',
                     'tris', 'kenta', 'full', 'poker', 'jamb']
     @down_column = @field_names
@@ -10,8 +8,12 @@ class Score
     @dice_values = nil
   end
 
+  # TODO: fix show_options to display current options acurately from all_options
+
   def show_options(dice_values)
     all_options = all_options(dice_values)
+    puts('all options') # for debuging only
+    puts(all_options) # for debuging only
     show = { 'down' => {}, 'up-down' => {}, 'up' => {} }
     @field_names.each do |f|
       show['up-down'][f] = all_options[f] unless @updown_column.key? f
@@ -23,9 +25,9 @@ class Score
         show['down'][f] = all_options[f] if @down_column[0] == f
       end
     end
+    puts('=> current options:') # for debuging only
+    puts(show) # for debuging only
   end
-
-  # TODO: write test for show_options
 
   def all_options(dv)
     options = {}
