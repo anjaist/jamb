@@ -1,7 +1,7 @@
 require 'score'
 
 describe '::score' do
-  test_score = Score.new('player1')
+  test_score = Score.new
   describe '#tris?' do
     it 'should return true if current dice values contain at least 3 of x' do
       expect(test_score.tris?([1, 2, 2, 4, 2])).to be true
@@ -63,6 +63,15 @@ describe '::score' do
   describe '#calculate_jamb' do
     it 'should calculate jamb correctly' do
       expect(test_score.calculate_jamb([4, 4, 4, 4, 4])).to be 120
+    end
+  end
+  describe '#show_options' do
+    expected_result = { 'down' => { 'one' => 1 },
+                        'up-down' => { 'one' => 1, 'two' => 4, 'five' => 10,
+                                       'max' => 15, 'min' => 15 },
+                        'up' => {} }
+    it 'should show options correctly' do
+      expect(test_score.show_options([2, 1, 5, 2, 5])).to eq(expected_result)
     end
   end
 end

@@ -2,31 +2,33 @@ class Score
   def initialize
     @field_names = ['one', 'two', 'three', 'four', 'five', 'six', 'max', 'min',
                     'tris', 'kenta', 'full', 'poker', 'jamb']
-    @down_column = @field_names
-    @up_column = @field_names
+    @down_column = @field_names.clone
+    @up_column = @field_names.clone
     @updown_column = {}
     @dice_values = nil
   end
 
-  # TODO: fix show_options to display current options acurately from all_options
-
   def show_options(dice_values)
     all_options = all_options(dice_values)
-    puts('all options') # for debuging only
-    puts(all_options) # for debuging only
     show = { 'down' => {}, 'up-down' => {}, 'up' => {} }
     @field_names.each do |f|
-      show['up-down'][f] = all_options[f] unless @updown_column.key? f
-      if @up_column != []
-        show['up'][f] = all_options[f] if @up_column[-1] == f
-        @up_column.delete(f)
-      end
-      if @down_column != []
-        show['down'][f] = all_options[f] if @down_column[0] == f
+      if all_options.include? f
+        show['up-down'][f] = all_options[f] unless @updown_column.key? f
+        if @up_column != []
+          show['up'][f] = all_options[f] if @up_column[-1] == f
+          @up_column.delete(f)
+        end
+        if @down_column != []
+          if @down_column[0] == f
+            show['down'][f] = all_options[f]
+          end
+        end
       end
     end
-    puts('=> current options:') # for debuging only
-    puts(show) # for debuging only
+    show
+    # TODO: implement mechanism for choosing option
+    # TODO: @down_column.shift if down option was selected;
+    # similarly for @up_column
   end
 
   def all_options(dv)
@@ -35,7 +37,7 @@ class Score
     options['two'] = calculate_dice_of_number(dv, 2) if dv.include? 2
     options['three'] = calculate_dice_of_number(dv, 3) if dv.include? 3
     options['four'] = calculate_dice_of_number(dv, 4) if dv.include? 4
-    options['one'] = calculate_dice_of_number(dv, 5) if dv.include? 5
+    options['five'] = calculate_dice_of_number(dv, 5) if dv.include? 5
     options['six'] = calculate_dice_of_number(dv, 6) if dv.include? 6
     options['max'] = calculate_max_or_min(dv)
     options['min'] = calculate_max_or_min(dv)

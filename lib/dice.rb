@@ -75,8 +75,8 @@ class Dice
     puts('====================')
     @current_dice_values.each { |d| puts(d[:value]) }
     current_score = determine_score_class_for_player
-    current_score.show_options(dice_values_only)
-    # TODO: fix show_options options
+    puts('=> your options:')
+    puts(current_score.show_options(dice_values_only))
   end
 
   def roll_one_dice(dice)
@@ -123,5 +123,5 @@ end
 
 # gameplay:
 #
-my_game = Dice.new
-my_game.players_round('player1')
+# my_game = Dice.new
+# my_game.players_round('player1')
