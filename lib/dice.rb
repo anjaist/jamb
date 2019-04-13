@@ -1,7 +1,7 @@
 require_relative 'score'
 
 class Dice
-  attr_reader :current_dice_values, :players
+  attr_reader :current_dice_values
   def initialize(use_own_dice = false)
     @dice_value_options = [1, 2, 3, 4, 5]
     @clear_dice_values = []
@@ -19,6 +19,7 @@ class Dice
   def game_loop
     until @game_over
       active_player = determine_active_player
+      puts("\n+ + + + + + JAMB: #{active_player} + + + + + +\n")
       players_round(active_player)
     end
   end
@@ -26,7 +27,9 @@ class Dice
   def players_round(player)
     first_roll
     roll_until_finished
-    score = 1 # temp line
+    score = choose_score_to_commit
+    puts('=================')
+    puts("score to commit: #{score}")
     add_current_round_to_user_score(player, score)
     @players[player][:active] = false
     update_active_player
@@ -40,18 +43,26 @@ class Dice
     display_current_board
   end
 
-  def choose_dice
-    puts('which dice do you want to roll again? Press F to finish round')
-    choice_str = gets.chomp
-    choice = choice_str.to_i - 1
-    return false if choice_str.upcase == 'F'
-    choice
+  def players_choice
+    puts('-> Press R to roll a dice again')
+    puts('-> Press F to finish round')
+    while true
+      choice_str = gets.chomp
+      return false if choice_str.upcase == 'F'
+      if choice_str.upcase == 'R'
+        puts('which dice do you want to roll again?')
+        choice_str = gets.chomp
+        return choice_str.to_i - 1
+      else
+        puts('press either R or F, you dweeb')
+      end
+    end
   end
 
   def roll_until_finished
     available_dice = [0, 1, 2, 3, 4]
     while available_dice != []
-      choice = choose_dice
+      choice = players_choice
       break unless choice
       if available_dice.include? choice
         available_dice.delete(choice) if roll_limit_reached?(choice)
@@ -75,8 +86,10 @@ class Dice
     puts('====================')
     @current_dice_values.each { |d| puts(d[:value]) }
     current_score = determine_score_class_for_player
+    puts('====================')
     puts('=> your options:')
     puts(current_score.show_options(dice_values_only))
+    puts('====================')
   end
 
   def roll_one_dice(dice)
@@ -108,8 +121,29 @@ class Dice
     return @player2_score if player == 'player2'
   end
 
-  def display_current_score
-    # TODO: show possibilities at each dice roll
+  def choose_score_to_commit
+    current_score = determine_score_class_for_player
+    options = current_score.show_options(dice_values_only)
+    puts('-> Choose column: press u, d or ud')
+    while true
+      column = gets.chomp
+      break if ['u', 'd', 'ud'].include? column.downcase
+      puts('Dude, it\'s u, d or ud')
+    end
+    puts('-> Choose row: type full word')
+    while true
+      all_fields = current_score.field_names
+      row = gets.chomp.downcase
+      break if all_fields.include? row.downcase
+      puts('-> Gotta type the full word...')
+    end
+    case column.downcase
+    when 'u' then column = 'up'
+    when 'd' then column = 'down'
+    when 'ud' then column = 'up-down'
+    end
+    options[column][row]
+    # TODO: check if column is free; check if row for column is free
   end
 
   def add_current_round_to_user_score(player, score)
@@ -118,10 +152,11 @@ class Dice
 
   def game_over?
     # TODO: true if all players fulfilled all fields
+    # TODO: don't quit
   end
 end
 
 # gameplay:
 #
-# my_game = Dice.new
-# my_game.players_round('player1')
+my_game = Dice.new
+my_game.game_loop

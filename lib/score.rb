@@ -1,4 +1,5 @@
 class Score
+  attr_reader :field_names
   def initialize
     @field_names = ['one', 'two', 'three', 'four', 'five', 'six', 'max', 'min',
                     'tris', 'kenta', 'full', 'poker', 'jamb']
@@ -26,7 +27,6 @@ class Score
       end
     end
     show
-    # TODO: implement mechanism for choosing option
     # TODO: @down_column.shift if down option was selected;
     # similarly for @up_column
   end
