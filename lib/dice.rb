@@ -3,7 +3,7 @@ require_relative 'score'
 
 class Dice
   attr_reader :current_dice_values, :players
-  def initialize(use_own_dice = false)
+  def initialize(use_own_dice = false) # TODO: implement using own dice
     @dice_value_options = [1, 2, 3, 4, 5]
     @clear_dice_values = []
     5.times { @clear_dice_values << { value: nil, rolls: 0 } }
@@ -22,6 +22,7 @@ class Dice
       active_player = determine_active_player
       puts("\n+ + + + + + JAMB: #{active_player} + + + + + +\n")
       players_round(active_player)
+      # binding.pry
     end
   end
 
@@ -123,15 +124,20 @@ class Dice
     return @player2_score if player == 'player2'
   end
 
-  def choose_score_to_commit
-    current_score = determine_score_class_for_player
-    options = current_score.show_options(dice_values_only)
+  def choose_column
     puts('-> Choose column: press u, d or ud')
     while true
       column = gets.chomp
       break if ['u', 'd', 'ud'].include? column.downcase
       puts('Dude, it\'s u, d or ud')
     end
+    return 'up' if column.downcase == 'u'
+    return 'down' if column.downcase == 'd'
+    return 'up-down' if column.downcase == 'ud'
+  end
+
+  def choose_row
+    current_score = determine_score_class_for_player
     puts('-> Choose row: type full word')
     while true
       all_fields = current_score.field_names
@@ -139,15 +145,20 @@ class Dice
       break if all_fields.include? row.downcase
       puts('-> Gotta type the full word...')
     end
-    case column.downcase
-    when 'u' then column = 'up'
-    when 'd' then column = 'down'
-    when 'ud' then column = 'up-down'
+    row
+  end
+
+  def choose_score_to_commit
+    current_score = determine_score_class_for_player
+    options = current_score.show_options(dice_values_only)
+    while true
+      column = choose_column
+      row = choose_row
+      break if current_score.field_free?(column, row)
     end
     score = options[column][row]
     current_score.update_fields(column, row, score)
     score
-    # TODO: check if column is free; check if row for column is free
     # TODO: can commit score of 0
   end
 
@@ -161,6 +172,5 @@ class Dice
 end
 
 # gameplay:
-#
 # my_game = Dice.new
 # my_game.game_loop
