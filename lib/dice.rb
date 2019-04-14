@@ -1,7 +1,8 @@
+require 'pry-byebug'
 require_relative 'score'
 
 class Dice
-  attr_reader :current_dice_values
+  attr_reader :current_dice_values, :players
   def initialize(use_own_dice = false)
     @dice_value_options = [1, 2, 3, 4, 5]
     @clear_dice_values = []
@@ -29,9 +30,8 @@ class Dice
     roll_until_finished
     score = choose_score_to_commit
     puts('=================')
-    puts("score to commit: #{score}")
+    puts("score for current round: #{score}")
     add_current_round_to_user_score(player, score)
-    @players[player][:active] = false
     update_active_player
     puts 'round finished!'
     @current_dice_values = @clear_dice_values
@@ -104,9 +104,11 @@ class Dice
   end
 
   def update_active_player
-    if !@players['player1'][:active]
+    if @players['player1'][:active]
+      @players['player1'][:active] = false
       @players['player2'][:active] = true
-    elsif !@players['player2'][:active]
+    else
+      @players['player2'][:active] = false
       @players['player1'][:active] = true
     end
   end
@@ -142,7 +144,9 @@ class Dice
     when 'd' then column = 'down'
     when 'ud' then column = 'up-down'
     end
-    options[column][row]
+    score = options[column][row]
+    current_score.update_fields(column, row, score)
+    score
     # TODO: check if column is free; check if row for column is free
   end
 

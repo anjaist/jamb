@@ -1,11 +1,11 @@
 class Score
-  attr_reader :field_names
+  attr_reader :field_names, :user_score_card
   def initialize
     @field_names = ['one', 'two', 'three', 'four', 'five', 'six', 'max', 'min',
                     'tris', 'kenta', 'full', 'poker', 'jamb']
     @down_column = @field_names.clone
     @up_column = @field_names.clone
-    @updown_column = {}
+    @user_score_card = { 'down' => {}, 'up-down' => {}, 'up' => {} }
     @dice_values = nil
   end
 
@@ -14,21 +14,23 @@ class Score
     show = { 'down' => {}, 'up-down' => {}, 'up' => {} }
     @field_names.each do |f|
       if all_options.include? f
-        show['up-down'][f] = all_options[f] unless @updown_column.key? f
-        if @up_column != []
-          show['up'][f] = all_options[f] if @up_column[-1] == f
-          @up_column.delete(f)
+        unless @user_score_card['up-down'].key? f
+          show['up-down'][f] = all_options[f]
         end
-        if @down_column != []
-          if @down_column[0] == f
-            show['down'][f] = all_options[f]
-          end
+        if @up_column != [] && @up_column[-1] == f
+          show['up'][f] = all_options[f]
+        elsif @down_column != [] && @down_column[0] == f
+          show['down'][f] = all_options[f]
         end
       end
     end
     show
-    # TODO: @down_column.shift if down option was selected;
-    # similarly for @up_column
+  end
+
+  def update_fields(column, row, score)
+    @down_column.shift if column == 'down'
+    @up_column.pop if column == 'up'
+    @user_score_card[column][row] = score
   end
 
   def all_options(dv)
