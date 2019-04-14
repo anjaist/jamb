@@ -33,6 +33,11 @@ class Score
     @user_score_card[column][row] = score
   end
 
+  def field_free?(column, row)
+    return false if @user_score_card[column].key? row
+    true
+  end
+
   def all_options(dv)
     options = {}
     options['one'] = calculate_dice_of_number(dv, 1) if dv.include? 1

@@ -69,7 +69,7 @@ class Dice
         roll_one_dice(choice)
         display_current_board
       else
-        puts 'you alredy rolled this dice 3 times'
+        puts 'you already rolled this dice 3 times'
       end
     end
   end
@@ -148,6 +148,7 @@ class Dice
     current_score.update_fields(column, row, score)
     score
     # TODO: check if column is free; check if row for column is free
+    # TODO: can commit score of 0
   end
 
   def add_current_round_to_user_score(player, score)
@@ -156,11 +157,10 @@ class Dice
 
   def game_over?
     # TODO: true if all players fulfilled all fields
-    # TODO: don't quit
   end
 end
 
 # gameplay:
 #
-my_game = Dice.new
-my_game.game_loop
+# my_game = Dice.new
+# my_game.game_loop

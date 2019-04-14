@@ -74,4 +74,12 @@ describe '::score' do
       expect(test_score.show_options([2, 1, 5, 2, 5])).to eq(expected_result)
     end
   end
+  describe '#field_free?' do
+    it 'should return true if field is free, falase otherwise' do
+      puts(test_score.user_score_card)
+      test_score.user_score_card['up-down']['three'] = 9
+      expect(test_score.field_free?('up-down', 'three')).to be false
+      expect(test_score.field_free?('up-down', 'one')).to be true
+    end
+  end
 end
