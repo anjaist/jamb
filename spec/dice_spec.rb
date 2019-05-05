@@ -42,4 +42,25 @@ describe '::dice' do
       expect(test_game.players['player2'][:active]).to be false
     end
   end
+
+  describe '#game_over?' do
+    test_game.player1_score.field_names.each do |field_name|
+      test_game.player1_score.user_score_card['up'][field_name] = 0
+      test_game.player1_score.user_score_card['up-down'][field_name] = 0
+      test_game.player1_score.user_score_card['down'][field_name] = 0
+    end
+    test_game.player2_score.field_names.each do |field_name|
+      test_game.player2_score.user_score_card['up'][field_name] = 0
+      test_game.player2_score.user_score_card['up-down'][field_name] = 0
+      test_game.player2_score.user_score_card['down'][field_name] = 0
+    end
+    it 'should return true if both players completed all field in score card' do
+      expect(test_game.game_over?).to be true
+    end
+    it 'should return false if either player still has empty fields in
+        score card' do
+      test_game.player2_score.user_score_card['up'].delete('one')
+      expect(test_game.game_over?).to be false
+    end
+  end
 end

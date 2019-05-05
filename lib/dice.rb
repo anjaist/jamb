@@ -2,13 +2,12 @@ require 'pry-byebug'
 require_relative 'score'
 
 class Dice
-  attr_reader :current_dice_values, :players
+  attr_reader :current_dice_values, :players, :player1_score, :player2_score
   def initialize
     @dice_value_options = [1, 2, 3, 4, 5]
     @clear_dice_values = []
     5.times { @clear_dice_values << { value: nil, rolls: 0 } }
     @current_dice_values = @clear_dice_values
-    @use_own_dice = use_own_dice
     @players = { 'player1' => { active: true, score: 0 },
                  'player2' => { active: false, score: 0 } }
     @player1_score = Score.new
@@ -22,6 +21,8 @@ class Dice
       active_player = determine_active_player
       puts("\n+ + + + + + JAMB: #{active_player} + + + + + +\n")
       players_round(active_player)
+      # TODO: incorporate check for game_over
+      # game_over?
     end
   end
 
@@ -177,7 +178,22 @@ class Dice
   end
 
   def game_over?
-    # TODO: true if all players fulfilled all fields
+    num_of_fields = @player1_score.field_names.length
+    player1_values = @player1_score.user_score_card.values
+    player2_values = @player2_score.user_score_card.values
+    player1_finished = false
+    player2_finished = false
+    if player1_values[0].length == num_of_fields &&
+       player1_values[1].length == num_of_fields &&
+       player1_values[2].length == num_of_fields
+      player1_finished = true
+    end
+    if player2_values[0].length == num_of_fields &&
+       player2_values[1].length == num_of_fields &&
+       player2_values[2].length == num_of_fields
+      player2_finished = true
+    end
+    player1_finished && player2_finished
   end
 end
 
