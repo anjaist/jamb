@@ -75,7 +75,7 @@ describe '::score' do
     end
   end
   describe '#field_free?' do
-    it 'should return true if field is free, falase otherwise' do
+    it 'should return true if field is free, false otherwise' do
       puts(test_score.user_score_card)
       test_score.user_score_card['up-down']['three'] = 9
       expect(test_score.field_free?('up-down', 'three')).to be false

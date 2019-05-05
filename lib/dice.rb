@@ -3,7 +3,7 @@ require_relative 'score'
 
 class Dice
   attr_reader :current_dice_values, :players
-  def initialize(use_own_dice = false) # TODO: implement using own dice
+  def initialize
     @dice_value_options = [1, 2, 3, 4, 5]
     @clear_dice_values = []
     5.times { @clear_dice_values << { value: nil, rolls: 0 } }
@@ -153,11 +153,23 @@ class Dice
     while true
       column = choose_column
       row = choose_row
+      score = options[column][row]
+      zero_score = commit_zero_score? if score.zero?
+      next if zero_score == false
       break if current_score.field_free?(column, row)
     end
-    score = options[column][row]
     current_score.update_fields(column, row, score)
     score
+  end
+
+  def commit_zero_score?
+    while true
+      puts('Are you sure you want to commit a score of 0? [y/n]')
+      answer = gets.chomp
+      return false if answer.downcase == 'n'
+      return true if answer.downcase == 'y'
+      puts("Please type 'y' or 'n'...")
+    end
   end
 
   def add_current_round_to_user_score(player, score)
