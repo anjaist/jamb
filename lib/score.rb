@@ -53,6 +53,13 @@ class Score
     options['full'] = calculate_full(dv) if full?(dv)
     options['poker'] = calculate_poker(dv) if poker?(dv)
     options['jamb'] = calculate_jamb(dv) if jamb?(dv)
+    add_zero_options_to_all_options(options)
+  end
+
+  def add_zero_options_to_all_options(options)
+    @field_names.each do |f|
+      options[f] = 0 unless options.key? f
+    end
     options
   end
 

@@ -22,7 +22,6 @@ class Dice
       active_player = determine_active_player
       puts("\n+ + + + + + JAMB: #{active_player} + + + + + +\n")
       players_round(active_player)
-      # binding.pry
     end
   end
 
@@ -159,7 +158,6 @@ class Dice
     score = options[column][row]
     current_score.update_fields(column, row, score)
     score
-    # TODO: can commit score of 0
   end
 
   def add_current_round_to_user_score(player, score)
