@@ -1,9 +1,19 @@
 require 'pry-byebug'
+require 'gosu'
 require_relative 'score'
+require_relative 'board'
 
-class Dice
+class DiceGame < Gosu::Window
+  WINDOW_WIDTH = 640
+  WINDOW_HEIGHT = 480
+  WHITE = Gosu::Color::WHITE
+  DICE_SIZE = 55
+
   attr_reader :current_dice_values, :players, :player1_score, :player2_score
+
   def initialize
+    super WINDOW_WIDTH, WINDOW_HEIGHT
+
     @dice_value_options = [1, 2, 3, 4, 5]
     @clear_dice_values = []
     5.times { @clear_dice_values << { value: nil, rolls: 0 } }
@@ -14,6 +24,8 @@ class Dice
     @player2_score = Score.new
     @active = 'player1'
     @game_over = false
+    @board = Board.new
+    @font = Gosu::Font.new(self, 'Arial', 15)
   end
 
   def game_loop
@@ -24,6 +36,16 @@ class Dice
       # TODO: incorporate check for game_over
       # game_over?
     end
+  end
+
+  def draw
+    # TODO: use actual current_dice_values
+    dice_values = dice_values_only
+    @board.draw(dice_values, @font) if dice_values[0]
+  end
+
+  def update
+    game_loop
   end
 
   def players_round(player)
@@ -197,6 +219,4 @@ class Dice
   end
 end
 
-# gameplay:
-# my_game = Dice.new
-# my_game.game_loop
+DiceGame.new.show
