@@ -1,7 +1,6 @@
 require 'pry-byebug'
 require 'gosu'
 require_relative 'score'
-require_relative 'board'
 
 class DiceGame < Gosu::Window
   WINDOW_WIDTH = 640
@@ -14,6 +13,12 @@ class DiceGame < Gosu::Window
   def initialize
     super WINDOW_WIDTH, WINDOW_HEIGHT
 
+    # variables for drawing board
+    @x_start = WINDOW_WIDTH / 5 - 1.3 * DICE_SIZE
+    @y_start = WINDOW_HEIGHT / 2 - DICE_SIZE
+    @font = Gosu::Font.new(self, 'Arial', 15)
+
+    # gameplay variables
     @dice_value_options = [1, 2, 3, 4, 5]
     @clear_dice_values = []
     5.times { @clear_dice_values << { value: nil, rolls: 0 } }
@@ -24,8 +29,6 @@ class DiceGame < Gosu::Window
     @player2_score = Score.new
     @active = 'player1'
     @game_over = false
-    @board = Board.new
-    @font = Gosu::Font.new(self, 'Arial', 15)
   end
 
   def game_loop
@@ -33,15 +36,23 @@ class DiceGame < Gosu::Window
       active_player = determine_active_player
       puts("\n+ + + + + + JAMB: #{active_player} + + + + + +\n")
       players_round(active_player)
-      # TODO: incorporate check for game_over
-      # game_over?
+      @game_over = game_over?
     end
   end
 
   def draw
-    # TODO: use actual current_dice_values
+    x = @x_start
+    y = @y_start
+    dice_ids = (1..5).to_a
+    current_id = dice_ids.clone
     dice_values = dice_values_only
-    @board.draw(dice_values, @font) if dice_values[0]
+    dice_values.each do |dice|
+      dice_image = Gosu::Image.new("lib/images/#{dice}.png")
+      dice_image.draw(x, y, 0, 0.5, 0.5)
+      @font.draw_text(current_id.shift.to_s, x + DICE_SIZE / 1.55,
+                     y - DICE_SIZE / 2, 0, 1.0, 1.0, WHITE)
+      x += DICE_SIZE * 2
+    end
   end
 
   def update
@@ -99,6 +110,7 @@ class DiceGame < Gosu::Window
 
   def dice_values_only
     values = []
+    return [] if @current_dice_values[0][:value].nil?
     @current_dice_values.each do |dice|
       values << dice[:value]
     end
@@ -219,4 +231,6 @@ class DiceGame < Gosu::Window
   end
 end
 
+# my_dice_game = DiceGame.new
+# my_dice_game.game_loop
 DiceGame.new.show
